@@ -4,7 +4,7 @@ import { colors } from '../../Colors';
 import checkFill from '../../assets/actions/check-fill.png';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-const Task = ({ content, isCompleted, onDeleted }) => {
+const Task = ({ label, isCompleted, onDeleted, onClickCompletedtask }) => {
   const completedBgColor = useMemo(() => {
     return isCompleted ? colors.DARK_BLUE : colors.WHITE;
   }, [isCompleted]);
@@ -29,6 +29,7 @@ const Task = ({ content, isCompleted, onDeleted }) => {
         }}
       >
         <div
+          onClick={onClickCompletedtask}
           style={{
             border: isCompleted ? 'none' : `1px solid ${colors.LIGHT_GREY} `,
             borderRadius: '7px',
@@ -50,7 +51,7 @@ const Task = ({ content, isCompleted, onDeleted }) => {
             marginLeft: 10,
           }}
         >
-          {content}
+          {label}
         </p>
       </div>
       <div

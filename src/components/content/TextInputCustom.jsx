@@ -32,6 +32,8 @@ const TextInputCustom = ({
       outline: 'none',
       width: '100%',
       height: '50px',
+      fontSize: 16,
+      fontFamily: 'IBM, sans-serif',
     },
   };
 

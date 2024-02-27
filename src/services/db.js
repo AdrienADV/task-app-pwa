@@ -12,11 +12,11 @@ db.version(1).stores({
 
 const addTask = async (label) => {
     if (!areArgumentsValid(label)) {
-        return 'Veuillez entrer une tâche valide';
+        return { result: false, message: 'Veuillez entrer une tâche valide' }
     }
     try {
         await db.tasks.add({ label, isCompleted: false, status: 1 });
-        return 'Tâche ajoutée avec succès';
+        return { result: true, message: 'Tâche ajoutée avec succès' };
     } catch (error) {
         console.error(error);
     }
@@ -32,4 +32,13 @@ const removeTask = async (id) => {
     }
 };
 
-export { db, addTask, removeTask };
+const taskCompletedToggle = async (id, status) => {
+    try {
+        await db.tasks.update(id, { isCompleted: status });
+        return { result: true, message: 'Tâche marquée comme terminée avec succès' };
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export { db, addTask, removeTask, taskCompletedToggle };
