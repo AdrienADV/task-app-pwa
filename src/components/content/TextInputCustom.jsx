@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { colors } from '../../Colors';
+
+import CloseIcon from '@mui/icons-material/Close';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const TextInputCustom = ({
   disabled = false,
   value = '',
   placeholder,
   onChangeText,
-  icon = 'https://picsum.photos/200/300',
+  removeText = false,
+  removeTextOnClick,
+  isOptionAvailable = true,
 }) => {
+  const colorActive = useMemo(() => {
+    return value.length > 0 ? colors.DARK_BLUE : colors.LIGHT_GREY;
+  }, [value]);
+
   const styles = {
     container: {
       display: 'flex',
@@ -21,7 +31,7 @@ const TextInputCustom = ({
       border: 'none',
       outline: 'none',
       width: '100%',
-      height: '45px',
+      height: '50px',
     },
   };
 
@@ -35,7 +45,21 @@ const TextInputCustom = ({
         onChange={(e) => onChangeText(e.target.value)}
         disabled={disabled}
       />
-      {icon && <img src={icon} width={30} height={30} alt='icon' />}
+      {removeText && (
+        <CloseIcon
+          onClick={removeTextOnClick}
+          style={{ cursor: 'pointer', color: colorActive }}
+          width={30}
+          height={30}
+        />
+      )}
+      {isOptionAvailable && (
+        <AddCircleOutlineIcon
+          style={{ cursor: 'pointer', color: colorActive, marginLeft: 10 }}
+          width={30}
+          height={30}
+        />
+      )}
     </div>
   );
 };

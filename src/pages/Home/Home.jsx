@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../Home/HomeStyle.css';
 
-import { useNavigate } from 'react-router-dom';
 import CustomButton from '../../components/content/CustomButton';
 import TextInputCustom from '../../components/content/TextInputCustom';
 import Task from '../../components/content/Task';
+
 import { colors } from '../../Colors';
+
+import { useLiveQuery } from 'dexie-react-hooks';
+import { addTask, db } from '../../services/db';
 
 const Home = () => {
   const [value, setValue] = useState('');
+  // const tasks = useLiveQuery(() => db.tasks.toArray(), []);
+  const handleAddTask = (value) => {
+    addTask(value);
+  };
+  useEffect(() => {
+    handleAddTask('manger des nems');
+  }, []);
 
   return (
     <div>
@@ -22,16 +32,22 @@ const Home = () => {
       <div
         style={{
           width: '400px',
-          height: '430px',
+          height: '100%',
           padding: '0 20px',
           overflow: 'scroll',
         }}
       >
         <Task content='Faire les courses' isCompleted={false} />
-        <Task content='Faire les courses' isCompleted={true} />
+        <Task content='Faire les courses' isCompleted={false} />
       </div>
       <div className='bottom-input'>
-        <TextInputCustom value={value} onChangeText={setValue} placeholder='Ajouter une tache' />
+        <TextInputCustom
+          value={value}
+          onChangeText={setValue}
+          placeholder='Ajouter une tache'
+          removeText={true}
+          removeTextOnClick={() => setValue('')}
+        />
         <CustomButton
           containerStyle={{ marginTop: 20 }}
           label='ADD TASK'

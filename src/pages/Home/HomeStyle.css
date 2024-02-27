@@ -16,9 +16,10 @@ body {
   width: 400px;
   padding: 0 20px;
   position: absolute;
-  bottom: calc(60px + 25px);
+  bottom: 60px;
   padding-top: 20px;
   border-top: 1px solid #74767c;
+  height: 175px;
 }
 
 .header {

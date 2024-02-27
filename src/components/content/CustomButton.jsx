@@ -12,7 +12,7 @@ const CustomButton = ({ onClick, disabled, label, containerStyle }) => {
     fontWeight: '500',
     fontFamily: "'IBM Plex Sans', sans-serif",
     textTransform: 'uppercase',
-    height: '45px',
+    height: '50px',
   };
 
   return (
