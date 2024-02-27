@@ -38,7 +38,13 @@ const Navigation = () => {
         setValue(newValue);
         handleNavigation(newValue);
       }}
-      sx={{ width: '100%', position: 'fixed', bottom: 0, boxShadow: '0px 1px 5px rgba(0,0,0,0.2)' }}
+      sx={{
+        height: '60px',
+        width: '100%',
+        position: 'fixed',
+        bottom: 0,
+        boxShadow: '0px 1px 5px rgba(0,0,0,0.2)',
+      }}
       disableRipple={true}
     >
       <BottomNavigationAction

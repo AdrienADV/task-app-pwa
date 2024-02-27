@@ -4,8 +4,10 @@ import Dexie from 'dexie';
 const db = new Dexie('TodoDatabase');
 db.version(1).stores({
     taskDetails: '++id, taskId, detail',
-    task: '++id, content, isCompleted'
+    task: '++id, content, isCompleted, status'
 });
+
+// status => higher priority, lower priority, medium priority
 
 const addTodo = async (content) => {
     try {

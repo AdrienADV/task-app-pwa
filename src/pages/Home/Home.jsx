@@ -5,14 +5,31 @@ import { useNavigate } from 'react-router-dom';
 import CustomButton from '../../components/content/CustomButton';
 import TextInputCustom from '../../components/content/TextInputCustom';
 import Task from '../../components/content/Task';
+import { colors } from '../../Colors';
 
 const Home = () => {
-  const navigate = useNavigate();
   const [value, setValue] = useState('');
 
   return (
     <div>
-      <Task isCompleted={false} content={'Acheter du pain'} />
+      <div className='header'>
+        <div>
+          <h1 style={{ fontWeight: 'bold', fontSize: 27 }}>Today's Task</h1>
+          <p style={{ color: colors.LIGHT_GREY, marginTop: 10 }}>(2/4) Completed Tasks</p>
+        </div>
+        <p className='remove-task'>CLEAR ALL</p>
+      </div>
+      <div
+        style={{
+          width: '400px',
+          height: '430px',
+          padding: '0 20px',
+          overflow: 'scroll',
+        }}
+      >
+        <Task content='Faire les courses' isCompleted={false} />
+        <Task content='Faire les courses' isCompleted={true} />
+      </div>
       <div className='bottom-input'>
         <TextInputCustom value={value} onChangeText={setValue} placeholder='Ajouter une tache' />
         <CustomButton

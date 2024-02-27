@@ -7,7 +7,6 @@
 html,
 body {
   font-family: 'IBM', sans-serif;
-  font-weight: 500;
   font-style: normal;
 }
 
@@ -17,6 +16,21 @@ body {
   width: 400px;
   padding: 0 20px;
   position: absolute;
-  bottom: 20px;
-  border-top: 1px solid #5039d4;
+  bottom: calc(60px + 25px);
+  padding-top: 20px;
+  border-top: 1px solid #74767c;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 15px;
+}
+
+.remove-task {
+  cursor: pointer;
+  color: #5039d4;
+  font-weight: bold;
+  text-decoration: underline;
 }
