@@ -4,17 +4,23 @@ import '../Home/HomeStyle.css';
 import { useNavigate } from 'react-router-dom';
 import CustomButton from '../../components/content/CustomButton';
 import TextInputCustom from '../../components/content/TextInputCustom';
+import Task from '../../components/content/Task';
 
 const Home = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState('');
 
   return (
-    <div className='container'>
-      <h1>Home</h1>
-      <button onClick={() => navigate('/profil')}>Go to Profil</button>
-      <CustomButton label='button' disabled={true} />
-      <TextInputCustom value={value} onChangeText={setValue} />
+    <div>
+      <Task isCompleted={false} content={'Acheter du pain'} />
+      <div className='bottom-input'>
+        <TextInputCustom value={value} onChangeText={setValue} placeholder='Ajouter une tache' />
+        <CustomButton
+          containerStyle={{ marginTop: 20 }}
+          label='ADD TASK'
+          disabled={value.length <= 0}
+        />
+      </div>
     </div>
   );
 };

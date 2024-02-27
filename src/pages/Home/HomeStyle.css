@@ -1,8 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html,
 body {
   font-family: 'IBM', sans-serif;
   font-weight: 500;
   font-style: normal;
-  margin: 0;
-  padding: 0;
+}
+
+.bottom-input {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  padding: 0 20px;
+  position: absolute;
+  bottom: 20px;
+  border-top: 1px solid #5039d4;
 }
