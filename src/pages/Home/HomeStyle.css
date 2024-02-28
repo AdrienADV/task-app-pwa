@@ -35,3 +35,27 @@ body {
   font-weight: bold;
   text-decoration: underline;
 }
+
+.container-tasks {
+  width: 400px;
+  height: 510px;
+  padding: 0 20px;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.snackbar-animation {
+  animation: fadeIn 0.5s;
+  position: absolute;
+  bottom: 5px;
+  align-self: center;
+}

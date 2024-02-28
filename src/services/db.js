@@ -5,7 +5,7 @@ import { areArgumentsValid } from './utils';
 const db = new Dexie('database');
 db.version(1).stores({
     taskDetails: '++id, taskId, detail',
-    tasks: '++id, label, isCompleted, status'
+    tasks: '++id, label, isCompleted, status, type'
 });
 
 // status =>  1 : lower priority, 2 : medium priority, 3 : higher priority,
@@ -24,7 +24,7 @@ const addTask = async (label) => {
 
 const removeTask = async (id) => {
     try {
-        await db.taskDetails.where({ todoId: id }).delete();
+        await db.taskDetails.where({ taskId: id }).delete();
         await db.tasks.delete(id);
         return 'Tâche et détails associés retirés avec succès';
     } catch (error) {
@@ -41,4 +41,14 @@ const taskCompletedToggle = async (id, status) => {
     }
 }
 
-export { db, addTask, removeTask, taskCompletedToggle };
+const deleteAllTasks = async () => {
+    try {
+        await db.tasks.clear();
+        await db.taskDetails.clear();
+        return 'Toutes les tâches et détails associés retirés avec succès';
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export { db, addTask, removeTask, taskCompletedToggle, deleteAllTasks };
