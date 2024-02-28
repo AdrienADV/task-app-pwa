@@ -12,6 +12,7 @@ const TextInputCustom = ({
   removeText = false,
   removeTextOnClick,
   isOptionAvailable = true,
+  onEnterPress,
 }) => {
   const colorActive = useMemo(() => {
     return value.length > 0 ? colors.DARK_BLUE : colors.LIGHT_GREY;
@@ -46,6 +47,11 @@ const TextInputCustom = ({
         placeholder={placeholder}
         onChange={(e) => onChangeText(e.target.value)}
         disabled={disabled}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onEnterPress();
+          }
+        }}
       />
       {removeText && (
         <CloseIcon

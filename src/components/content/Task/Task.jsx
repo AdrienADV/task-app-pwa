@@ -57,8 +57,9 @@ const Task = ({ label, isCompleted, onDeleted, onClickCompletedtask, status, onC
     container: {
       display: 'flex',
       alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: statusDetail.secondary,
-      padding: '5px 20px',
+      padding: '5px 10px',
       borderRadius: 20,
       width: '80px',
     },

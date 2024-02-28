@@ -85,7 +85,7 @@ const Home = () => {
           CLEAR ALL
         </p>
       </div>
-      <div className='container-tasks'>
+      <div className='container-tasks' style={{ paddingBottom: tasks?.length >= 6 && '200px' }}>
         {tasks
           ?.sort((a, b) => b.status - a.status)
           .map((task, index) => {
@@ -113,9 +113,12 @@ const Home = () => {
         <TextInputCustom
           value={value}
           onChangeText={setValue}
-          placeholder='Ajouter une tache'
+          placeholder='Add a task lazy men'
           removeText={true}
           removeTextOnClick={() => setValue('')}
+          onEnterPress={() => {
+            handleAddTask(value);
+          }}
         />
         <CustomButton
           containerStyle={{ marginTop: 20 }}
