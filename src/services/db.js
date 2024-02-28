@@ -1,5 +1,7 @@
 import Dexie from 'dexie';
+
 import { areArgumentsValid } from './utils';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 
 const db = new Dexie('database');
@@ -15,7 +17,7 @@ const addTask = async (label) => {
         return { result: false, message: 'Veuillez entrer une tâche valide' }
     }
     try {
-        await db.tasks.add({ label, isCompleted: false, status: 1 });
+        await db.tasks.add({ label, isCompleted: false, status: 3 });
         return { result: true, message: 'Tâche ajoutée avec succès' };
     } catch (error) {
         console.error(error);
@@ -51,4 +53,30 @@ const deleteAllTasks = async () => {
     }
 };
 
-export { db, addTask, removeTask, taskCompletedToggle, deleteAllTasks };
+const changeTaskStatus = async (newStatus, taskId) => {
+    try {
+        await db.tasks.update(taskId, { status: newStatus });
+        return { result: true, message: 'Statut de la tâche modifié avec succès' };
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const TaskStatistics = () => {
+    const taskStats = useLiveQuery(async () => {
+        // Récupérer toutes les tâches
+        const allTasks = await db.tasks.toArray();
+
+        // Filtrer pour obtenir uniquement les tâches complétées
+        const completedTasks = allTasks.filter(task => task.isCompleted);
+
+        // Calculer le nombre de tâches complétées et le total des tâches
+        const completedCount = completedTasks.length;
+        const totalCount = allTasks.length;
+
+        // Retourner un objet avec les statistiques
+        return `Tâches complétées : ${completedCount} / ${totalCount}`;
+    }, []); // Le tableau de dépendances vide signifie que la requête sera exécutée une fois au montage du composant
+}
+
+export { db, addTask, removeTask, taskCompletedToggle, deleteAllTasks, changeTaskStatus, TaskStatistics };
