@@ -16,11 +16,14 @@ import {
   deleteAllTasks,
   changeTaskStatus,
 } from '../../services/db';
+import noTaskImage from '../../../src/assets/visuel/no_tasks.png';
+import ModalTaskDetails from '../../components/content/ModalTaskDetails';
 
 const Home = () => {
   const [value, setValue] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [contentSnackBar, setContentSnackBar] = useState({});
+  const [optionTextInput, setOptionTextInpu] = useState(false);
   const tasks = useLiveQuery(() => db.tasks.toArray());
 
   const taskStats = useLiveQuery(async () => {
@@ -86,14 +89,17 @@ const Home = () => {
         </p>
       </div>
       <div className='container-tasks' style={{ paddingBottom: tasks?.length >= 6 && '200px' }}>
-        {tasks
-          ?.sort((a, b) => b.status - a.status)
-          .map((task, index) => {
-            return (
+        {tasks?.length === 0 ? (
+          <div style={{ textAlign: 'center', marginTop: 50 }}>
+            <img src={noTaskImage} alt='No tasks available' style={{ maxWidth: '300px' }} />
+            <p style={{ color: colors.LIGHT_GREY, marginTop: 20 }}>No tasks available</p>
+          </div>
+        ) : (
+          tasks
+            ?.sort((a, b) => b.status - a.status)
+            .map((task, index) => (
               <Task
-                onClickCompletedtask={() =>
-                  taskCompletedToggle(task.id, !task.isCompleted ? true : false)
-                }
+                onClickCompleted={() => taskCompletedToggle(task.id, !task.isCompleted)}
                 key={index}
                 label={task.label}
                 isCompleted={task.isCompleted}
@@ -101,9 +107,10 @@ const Home = () => {
                 status={task.status}
                 onClickStatus={(status) => handleStatusChange(status, task.id)}
               />
-            );
-          })}
+            ))
+        )}
       </div>
+      {optionTextInput && <ModalTaskDetails />}
       <div style={{ backgroundColor: '#FFFFFF' }} className='bottom-input'>
         {openSnackbar && (
           <p className='snackbar-animation' style={{ color: contentSnackBar.color }}>
@@ -113,9 +120,10 @@ const Home = () => {
         <TextInputCustom
           value={value}
           onChangeText={setValue}
-          placeholder='Add a task lazy men'
+          placeholder='Add task lazy men'
           removeText={true}
           removeTextOnClick={() => setValue('')}
+          isOptionAvailableOnClick={() => setOptionTextInpu(!optionTextInput)}
           onEnterPress={() => {
             handleAddTask(value);
           }}

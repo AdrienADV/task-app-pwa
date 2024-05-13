@@ -13,7 +13,7 @@ body {
 .bottom-input {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 100vw;
   padding: 0 20px;
   position: absolute;
   bottom: 60px;
@@ -37,7 +37,6 @@ body {
 }
 
 .container-tasks {
-  width: 400px;
   height: 510px;
   padding: 0 20px;
   overflow: scroll;

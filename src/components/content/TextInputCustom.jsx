@@ -12,6 +12,7 @@ const TextInputCustom = ({
   removeText = false,
   removeTextOnClick,
   isOptionAvailable = true,
+  isOptionAvailableOnClick,
   onEnterPress,
 }) => {
   const colorActive = useMemo(() => {
@@ -62,11 +63,13 @@ const TextInputCustom = ({
         />
       )}
       {isOptionAvailable && (
-        <AddCircleOutlineIcon
-          style={{ cursor: 'pointer', color: colorActive, marginLeft: 10 }}
-          width={30}
-          height={30}
-        />
+        <div onClick={isOptionAvailableOnClick} style={{ cursor: 'pointer', marginLeft: 10 }}>
+          <AddCircleOutlineIcon
+            style={{ cursor: 'pointer', color: colorActive }}
+            width={30}
+            height={30}
+          />
+        </div>
       )}
     </div>
   );
