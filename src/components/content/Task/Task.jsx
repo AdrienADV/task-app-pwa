@@ -5,7 +5,7 @@ import './TaskStyle.css';
 import checkFill from '../../../assets/actions/check-fill.png';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-const Task = ({ label, isCompleted, onDeleted, onClickCompletedtask, status, onClickStatus }) => {
+const Task = ({ label, isCompleted, onDeleted, onClickCompletedTask, status, onClickStatus }) => {
   const [showStatusOptions, setShowStatusOptions] = useState(false);
 
   const statusOptions = [
@@ -90,7 +90,7 @@ const Task = ({ label, isCompleted, onDeleted, onClickCompletedtask, status, onC
         }}
       >
         <div
-          onClick={onClickCompletedtask}
+          onClick={onClickCompletedTask}
           style={{
             border: isCompleted ? 'none' : `1px solid ${colors.LIGHT_GREY} `,
             borderRadius: '7px',
@@ -100,6 +100,7 @@ const Task = ({ label, isCompleted, onDeleted, onClickCompletedtask, status, onC
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            cursor: 'pointer',
           }}
         >
           <img src={checkFill} width={18} height={18} alt='icon' />

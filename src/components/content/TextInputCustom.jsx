@@ -14,6 +14,7 @@ const TextInputCustom = ({
   isOptionAvailable = true,
   isOptionAvailableOnClick,
   onEnterPress,
+  containerStyle = {},
 }) => {
   const colorActive = useMemo(() => {
     return value.length > 0 ? colors.DARK_BLUE : colors.LIGHT_GREY;
@@ -25,7 +26,6 @@ const TextInputCustom = ({
       alignItems: 'center',
       border: `2px solid ${value.length > 0 ? '#5039d4' : '#74767c'}`,
       borderRadius: '7px',
-      width: '100%',
       padding: '0 12px',
       outline: 'none',
     },
@@ -40,7 +40,7 @@ const TextInputCustom = ({
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, ...containerStyle }}>
       <input
         style={styles.input}
         type='text'

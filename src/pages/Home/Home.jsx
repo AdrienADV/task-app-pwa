@@ -21,10 +21,64 @@ import ModalTaskDetails from '../../components/content/ModalTaskDetails';
 
 const Home = () => {
   const [value, setValue] = useState('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [location, setLocation] = useState({ latitude: null, longitude: null, error: null });
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [contentSnackBar, setContentSnackBar] = useState({});
   const [optionTextInput, setOptionTextInpu] = useState(false);
-  const tasks = useLiveQuery(() => db.tasks.toArray());
+  const [cityValue, setCityValue] = useState('Nantes');
+  const [postalCodeValue, setPostalCodeValue] = useState('44100');
+  const [addressValue, setAddressValue] = useState('43 rue de la ferme du rû');
+  const [selectedOption, setSelectedOption] = useState(0);
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setLocation({ ...location, error: 'Geolocation is not supported by your browser.' });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          ...location,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      () => {
+        setLocation({ ...location, error: 'Unable to retrieve your location.' });
+      }
+    );
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  const tasks = useLiveQuery(async () => {
+    const allTasks = await db.tasks.toArray();
+
+    const tasksWithDetails = await Promise.all(
+      allTasks.map(async (task) => {
+        const details = await db.taskDetails.where({ taskId: task.id }).first();
+        return { ...task, details: details || undefined };
+      })
+    );
+
+    return tasksWithDetails;
+  });
+
+  console.log(JSON.stringify(tasks, null, 2));
+
+  const handleSelectOption = (id) => {
+    setSelectedOption(id);
+  };
+
+  const detailsType = [
+    { label: 'GPS', id: 1 },
+    { label: 'Ajouter un fichier', id: 2 },
+  ];
 
   const taskStats = useLiveQuery(async () => {
     const allTasks = await db.tasks.toArray();
@@ -34,8 +88,8 @@ const Home = () => {
     return `${completedCount}/${totalCount}`;
   }, [tasks]);
 
-  const handleAddTask = async (label) => {
-    const response = await addTask(label);
+  const handleAddTask = async (label, type, contentDetails, isOnline) => {
+    const response = await addTask(label, type, contentDetails, isOnline);
     if (response) {
       setValue('');
       setContentSnackBar({
@@ -77,6 +131,24 @@ const Home = () => {
     return;
   }, [openSnackbar]);
 
+  useEffect(() => {
+    function handleOnline() {
+      setIsOnline(true);
+    }
+
+    function handleOffline() {
+      setIsOnline(false);
+    }
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   return (
     <div>
       <div className='header'>
@@ -99,7 +171,7 @@ const Home = () => {
             ?.sort((a, b) => b.status - a.status)
             .map((task, index) => (
               <Task
-                onClickCompleted={() => taskCompletedToggle(task.id, !task.isCompleted)}
+                onClickCompletedTask={() => taskCompletedToggle(task.id, !task.isCompleted)}
                 key={index}
                 label={task.label}
                 isCompleted={task.isCompleted}
@@ -110,7 +182,19 @@ const Home = () => {
             ))
         )}
       </div>
-      {optionTextInput && <ModalTaskDetails />}
+      {optionTextInput && (
+        <ModalTaskDetails
+          detailsType={detailsType}
+          selectedOption={handleSelectOption}
+          options={selectedOption}
+          cityValue={cityValue}
+          postalCodeValue={postalCodeValue}
+          addressValue={addressValue}
+          setCityValue={setCityValue}
+          setPostalCodeValue={setPostalCodeValue}
+          setAddressValue={setAddressValue}
+        />
+      )}
       <div style={{ backgroundColor: '#FFFFFF' }} className='bottom-input'>
         {openSnackbar && (
           <p className='snackbar-animation' style={{ color: contentSnackBar.color }}>
@@ -132,7 +216,16 @@ const Home = () => {
           containerStyle={{ marginTop: 20 }}
           label='ADD TASK'
           disabled={value.length <= 0}
-          onClick={() => handleAddTask(value)}
+          onClick={() =>
+            handleAddTask(
+              value,
+              selectedOption,
+              selectedOption === 1
+                ? addressValue + ' ' + postalCodeValue + ' ' + cityValue
+                : undefined,
+              isOnline
+            )
+          }
         />
       </div>
     </div>
