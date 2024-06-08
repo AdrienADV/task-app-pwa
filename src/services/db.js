@@ -6,7 +6,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 
 const db = new Dexie('database');
 db.version(1).stores({
-    taskDetails: '++id, taskId, content, isOnline',
+    taskDetails: '++id, taskId, content',
     tasks: '++id, label, isCompleted, status, type, detailsId'
 });
 // detailsId => 0: rien, 1 : GPS, 2 : Ajouter un fichier
@@ -14,20 +14,21 @@ db.version(1).stores({
 
 //. status taskDetails => false : not completed, true : completed
 
-const addTask = async (label, type, contentDetails, isOnline) => {
-    if (!areArgumentsValid(label)) {
-        return { result: false, message: 'Veuillez entrer une tâche valide' }
+const addTask = async (label, type, contentDetails) => {
+    if (!areArgumentsValid(label, type)) {
+        return { result: false, message: 'Veuillez entrer des données valides pour la tâche' };
     }
     try {
         const taskId = await db.tasks.add({ label, isCompleted: false, status: 3, type });
         if (type === 1 || type === 2) {
             await db.taskDetails.add({
-                taskId, content: contentDetails, isOnline: type === 1 ? isOnline : true
+                taskId, content: contentDetails
             });
         }
         return { result: true, message: 'Tâche ajoutée avec succès' };
     } catch (error) {
         console.error(error);
+        return { result: false, message: 'Échec de l\'ajout de la tâche, veuillez réessayer.' };
     }
 };
 
@@ -80,4 +81,9 @@ const TaskStatistics = () => {
     }, []);
 }
 
-export { db, addTask, removeTask, taskCompletedToggle, deleteAllTasks, changeTaskStatus, TaskStatistics };
+const killDb = async () => {
+    await db.tasks.clear();
+    await db.taskDetails.clear();
+}
+
+export { db, addTask, removeTask, taskCompletedToggle, deleteAllTasks, changeTaskStatus, TaskStatistics, killDb };

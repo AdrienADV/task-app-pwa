@@ -3,6 +3,7 @@ import { colors } from '../../Colors';
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 const TextInputCustom = ({
   disabled = false,
@@ -10,6 +11,7 @@ const TextInputCustom = ({
   placeholder,
   onChangeText,
   removeText = false,
+  textToSpeechClick,
   removeTextOnClick,
   isOptionAvailable = true,
   isOptionAvailableOnClick,
@@ -28,6 +30,7 @@ const TextInputCustom = ({
       borderRadius: '7px',
       padding: '0 12px',
       outline: 'none',
+      width: '100%',
     },
     input: {
       border: 'none',
@@ -54,6 +57,14 @@ const TextInputCustom = ({
           }
         }}
       />
+      {textToSpeechClick && (
+        <VolumeUpIcon
+          onClick={textToSpeechClick}
+          style={{ cursor: 'pointer', color: colorActive, marginRight: 10 }}
+          width={30}
+          height={30}
+        />
+      )}
       {removeText && (
         <CloseIcon
           onClick={removeTextOnClick}

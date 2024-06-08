@@ -18,43 +18,20 @@ import {
 } from '../../services/db';
 import noTaskImage from '../../../src/assets/visuel/no_tasks.png';
 import ModalTaskDetails from '../../components/content/ModalTaskDetails';
+import { useSelector } from 'react-redux';
+import Onboarding from '../../components/content/Onboarding';
 
 const Home = () => {
+  const store = useSelector((state) => state.user);
   const [value, setValue] = useState('');
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [location, setLocation] = useState({ latitude: null, longitude: null, error: null });
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [contentSnackBar, setContentSnackBar] = useState({});
-  const [optionTextInput, setOptionTextInpu] = useState(false);
+  const [optionTextInput, setOptionTextInput] = useState(false);
   const [cityValue, setCityValue] = useState('Nantes');
   const [postalCodeValue, setPostalCodeValue] = useState('44100');
   const [addressValue, setAddressValue] = useState('43 rue de la ferme du rû');
   const [selectedOption, setSelectedOption] = useState(0);
-
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      setLocation({ ...location, error: 'Geolocation is not supported by your browser.' });
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          ...location,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          error: null,
-        });
-      },
-      () => {
-        setLocation({ ...location, error: 'Unable to retrieve your location.' });
-      }
-    );
-  };
-
-  useEffect(() => {
-    getLocation();
-  }, []);
+  const [file, setFile] = useState(null);
 
   const tasks = useLiveQuery(async () => {
     const allTasks = await db.tasks.toArray();
@@ -69,7 +46,23 @@ const Home = () => {
     return tasksWithDetails;
   });
 
-  console.log(JSON.stringify(tasks, null, 2));
+  const speechHandler = () => {
+    const eachTask = tasks.map((task) => task.label).join(', ');
+    const speechText = `tes prochaines taches sont: ${eachTask}`;
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFile(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSelectOption = (id) => {
     setSelectedOption(id);
@@ -88,8 +81,8 @@ const Home = () => {
     return `${completedCount}/${totalCount}`;
   }, [tasks]);
 
-  const handleAddTask = async (label, type, contentDetails, isOnline) => {
-    const response = await addTask(label, type, contentDetails, isOnline);
+  const handleAddTask = async (label, type, contentDetails) => {
+    const response = await addTask(label, type, contentDetails);
     if (response) {
       setValue('');
       setContentSnackBar({
@@ -131,23 +124,18 @@ const Home = () => {
     return;
   }, [openSnackbar]);
 
-  useEffect(() => {
-    function handleOnline() {
-      setIsOnline(true);
-    }
+  const handleDownloadFile = (contentDetails) => {
+    const pdfLink = `${contentDetails}`;
+    const anchorElement = document.createElement('a');
+    const fileName = `document.pdf`;
+    anchorElement.href = pdfLink;
+    anchorElement.download = fileName;
+    anchorElement.click();
+  };
 
-    function handleOffline() {
-      setIsOnline(false);
-    }
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  if (!store.isCompleted) {
+    return <Onboarding />;
+  }
 
   return (
     <div>
@@ -169,15 +157,20 @@ const Home = () => {
         ) : (
           tasks
             ?.sort((a, b) => b.status - a.status)
-            .map((task, index) => (
+            .map((task) => (
               <Task
+                detailsContent={task.details?.content}
+                type={task.type}
                 onClickCompletedTask={() => taskCompletedToggle(task.id, !task.isCompleted)}
-                key={index}
+                key={task.id}
                 label={task.label}
                 isCompleted={task.isCompleted}
                 onDeleted={() => handleRemoveTask(task.id)}
                 status={task.status}
                 onClickStatus={(status) => handleStatusChange(status, task.id)}
+                onClickOpenFile={(contentDetails) => {
+                  handleDownloadFile(contentDetails);
+                }}
               />
             ))
         )}
@@ -193,6 +186,8 @@ const Home = () => {
           setCityValue={setCityValue}
           setPostalCodeValue={setPostalCodeValue}
           setAddressValue={setAddressValue}
+          handleFileChange={handleFileChange}
+          showLottie={file}
         />
       )}
       <div style={{ backgroundColor: '#FFFFFF' }} className='bottom-input'>
@@ -203,29 +198,37 @@ const Home = () => {
         )}
         <TextInputCustom
           value={value}
+          textToSpeechClick={() => speechHandler()}
           onChangeText={setValue}
           placeholder='Add task lazy men'
           removeText={true}
           removeTextOnClick={() => setValue('')}
-          isOptionAvailableOnClick={() => setOptionTextInpu(!optionTextInput)}
+          isOptionAvailableOnClick={() => setOptionTextInput(!optionTextInput)}
           onEnterPress={() => {
-            handleAddTask(value);
+            handleAddTask(
+              value,
+              selectedOption,
+              selectedOption === 1 ? addressValue + ' ' + postalCodeValue + ' ' + cityValue : file
+            );
+            setFile(null);
+            setSelectedOption(0);
+            setOptionTextInput(false);
           }}
         />
         <CustomButton
           containerStyle={{ marginTop: 20 }}
           label='ADD TASK'
           disabled={value.length <= 0}
-          onClick={() =>
+          onClick={() => {
             handleAddTask(
               value,
               selectedOption,
-              selectedOption === 1
-                ? addressValue + ' ' + postalCodeValue + ' ' + cityValue
-                : undefined,
-              isOnline
-            )
-          }
+              selectedOption === 1 ? addressValue + ' ' + postalCodeValue + ' ' + cityValue : file
+            );
+            setFile(null);
+            setSelectedOption(0);
+            setOptionTextInput(false);
+          }}
         />
       </div>
     </div>

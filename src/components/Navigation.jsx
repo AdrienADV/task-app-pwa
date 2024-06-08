@@ -3,8 +3,10 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import Person2Icon from '@mui/icons-material/Person2';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navigation = () => {
+  const isShowingTabBar = useSelector((state) => state.user.isCompleted);
   const [value, setValue] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,11 +41,13 @@ const Navigation = () => {
         handleNavigation(newValue);
       }}
       sx={{
+        display: !isShowingTabBar && 'none',
         height: '60px',
         width: '100%',
         position: 'fixed',
         bottom: 0,
         boxShadow: '0px 1px 5px rgba(0,0,0,0.2)',
+        zIndex: 2,
       }}
       disableRipple={true}
     >
